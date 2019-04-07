@@ -1,0 +1,50 @@
+:-use_module(library(tabular)).
+	   
+	   
+board_color(D):-
+	new(D,dialog('connect four')),
+	new(T,tabular),
+	send(D,display,T),
+	send(T,border,1),
+	send(T,cell_spacing,4),
+	send(T,rules,all),
+	connect_color(1,1,T,[soldier(7,4,'red'),soldier(6,4,'yellow')]),
+	send(D,open).
+
+
+
+connect_color(7,8,_,_).
+
+connect_color(1,Col,T,List):-
+	new(B,bitmap('arrow.jpeg')),
+	send(T,append,B),
+	NewCol is Col+1,
+	send(B,recogniser,click_gesture(left,'',single,message(@prolog,drop,Col))),
+	connect_color(1,NewCol,T,List).
+
+connect_color(Line,8,T,List):-
+	send(T,next_row),
+	NewLine is Line+1,
+	connect_color(NewLine,1,T,List).
+
+connect_color(Line,Col,T,List):-
+	member(soldier(Line,Col,yellow),List),
+	new(B,bitmap('yellow.bmp')),
+	send(T,append,B),
+	NewCol is Col+1,
+	connect_color(Line,NewCol,T,List).
+
+connect_color(Line,Col,T,List):-
+	member(soldier(Line,Col,red),List),
+	new(B,bitmap('red.bmp')),
+	send(T,append,B),
+	NewCol is Col+1,
+	connect_color(Line,NewCol,T,List).
+	   
+connect_color(Line,Col,T,List):-
+	new(B,bitmap('blank.bmp')),
+	send(T,append,B),
+	NewCol is Col+1,
+	connect_color(Line,NewCol,T,List).
+
+
